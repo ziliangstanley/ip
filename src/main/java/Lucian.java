@@ -28,23 +28,48 @@ public class Lucian {
                     Task currentTask = listOfTasks.get(i);
                     System.out.println(i + 1 + "." + currentTask.toString());
                 }
-            } else if (userInput.startsWith("mark")) {
+            } else if (userInput.startsWith("mark ") || userInput.startsWith("unmark ")) {
                 String index = userInput.split(" ")[1];
                 int idx = Integer.parseInt(index);
                 Task currentTask = listOfTasks.get(idx - 1);
-                currentTask.markAsDone();
-            } else if (userInput.startsWith("unmark")) {
-                String index = userInput.split(" ")[1];
-                int idx = Integer.parseInt(index);
-                Task currentTask = listOfTasks.get(idx - 1);
-                currentTask.markAsNotDone();
-            } else {
-                System.out.println("added: " + userInput);
-                Task newTask = new Task(userInput);
+                if (userInput.startsWith("mark")) {
+                    currentTask.markAsDone();
+                } else {
+                    currentTask.markAsNotDone();
+                }
+            } else if (userInput.startsWith("todo ") || userInput.startsWith("deadline ") || userInput.startsWith("event ")) {
+                Task newTask = createTask(userInput);
+                System.out.println("Roger. I'll be adding this task to the list:");
+                System.out.println(newTask);
                 listOfTasks.add(newTask);
+                System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
+            } else {
+                System.out.println("I can't understand what your saying, try telling me something I can understand...");
             }
+
             System.out.println("____________________________________________________________");
         }
+    }
 
+    private static Task createTask(String input) {
+        Task createdTask;
+        String description;
+        if (input.startsWith("todo ")) {
+            description = input.substring(5);
+            createdTask = new ToDo(description);
+        } else if (input.startsWith("deadline ")) {
+            int byIndex = input.indexOf("/by");
+            String by = input.substring(byIndex + 4);
+            description = input.substring(6, byIndex - 1);
+            createdTask = new Deadline(description, by);
+        } else {
+            int fromIndex = input.indexOf("/from");
+            int toIndex = input.indexOf("/to");
+            String from = input.substring(fromIndex + 6, toIndex - 1);
+            String to = input.substring(toIndex + 4);
+            description = input.substring(6, fromIndex - 1);
+            createdTask = new Event(description, from, to);
+        }
+        return createdTask;
     }
 }
