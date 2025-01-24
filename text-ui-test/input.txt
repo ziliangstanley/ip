@@ -1,0 +1,13 @@
+todo Clean Room
+deadline Math HW /by Sunday 2359
+event Party /from Saturday 1800 /to 2200
+list
+mark 1
+mark 2
+mark 3
+list
+unmark 3
+unmark 2
+unmark 1
+list
+bye

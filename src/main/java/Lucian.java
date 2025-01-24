@@ -22,6 +22,7 @@ public class Lucian {
             System.out.println("____________________________________________________________");
             if (userInput.equals("bye")) {
                 System.out.println("Bye. See you around.");
+                System.out.println("____________________________________________________________");
                 break;
             } else if (userInput.equals("list")) {
                 for (int i = 0; i < listOfTasks.size(); i++) {
@@ -60,7 +61,7 @@ public class Lucian {
         } else if (input.startsWith("deadline ")) {
             int byIndex = input.indexOf("/by");
             String by = input.substring(byIndex + 4);
-            description = input.substring(6, byIndex - 1);
+            description = input.substring(9, byIndex - 1);
             createdTask = new Deadline(description, by);
         } else {
             int fromIndex = input.indexOf("/from");
