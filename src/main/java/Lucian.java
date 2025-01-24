@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -18,36 +19,49 @@ public class Lucian {
 
 
         while (scanner.hasNext()) {
-            String userInput = scanner.nextLine();
             System.out.println("____________________________________________________________");
-            if (userInput.equals("bye")) {
-                System.out.println("Bye. See you around.");
-                System.out.println("____________________________________________________________");
-                break;
-            } else if (userInput.equals("list")) {
-                for (int i = 0; i < listOfTasks.size(); i++) {
-                    Task currentTask = listOfTasks.get(i);
-                    System.out.println(i + 1 + "." + currentTask.toString());
-                }
-            } else if (userInput.startsWith("mark ") || userInput.startsWith("unmark ")) {
-                String index = userInput.split(" ")[1];
-                int idx = Integer.parseInt(index);
-                Task currentTask = listOfTasks.get(idx - 1);
-                if (userInput.startsWith("mark")) {
-                    currentTask.markAsDone();
-                } else {
-                    currentTask.markAsNotDone();
-                }
-            } else if (userInput.startsWith("todo ") || userInput.startsWith("deadline ") || userInput.startsWith("event ")) {
-                Task newTask = createTask(userInput);
-                System.out.println("Roger. I'll be adding this task to the list:");
-                System.out.println(newTask);
-                listOfTasks.add(newTask);
-                System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
-            } else {
-                System.out.println("I can't understand what your saying, try telling me something I can understand...");
-            }
+            try {
+                String userInput = scanner.nextLine();
+                String command = userInput.split(" ")[0];
+                //String description = userInput.substring(command.length() + 1);
+                //System.out.println(description);
 
+                if (command.equals("bye")) {
+                    System.out.println("Bye. See you around.");
+                    System.out.println("____________________________________________________________");
+                    break;
+                } else if (command.equals("list")) {
+                    for (int i = 0; i < listOfTasks.size(); i++) {
+                        Task currentTask = listOfTasks.get(i);
+                        System.out.println(i + 1 + "." + currentTask.toString());
+                    }
+                } else if (command.equals("mark") || command.equals("unmark")) {
+                    if (userInput.split(" ").length == 1) {
+                        throw new LucianException("You have to give me the index to mark/unmark...");
+                    }
+                    int index = Integer.parseInt(userInput.split(" ")[1]);
+                    Task currentTask = listOfTasks.get(index - 1);
+                    if (userInput.startsWith("mark")) {
+                        currentTask.markAsDone();
+                    } else {
+                        currentTask.markAsNotDone();
+                    }
+                } else if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
+                    if (userInput.split(" ").length == 1) {
+                        throw new LucianException("The description of a " + command + " cannot be empty man...");
+                    }
+                    Task newTask = createTask(userInput);
+                    System.out.println("Roger. I'll be adding this task to the list:");
+                    System.out.println(newTask);
+                    listOfTasks.add(newTask);
+                    System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
+                } else {
+                    throw new LucianException("You did not give me a valid command...");
+                }
+
+            } catch (LucianException e) {
+                System.out.println(e.getMessage());
+            }
             System.out.println("____________________________________________________________");
         }
     }
