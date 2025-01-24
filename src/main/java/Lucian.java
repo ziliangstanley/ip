@@ -46,6 +46,16 @@ public class Lucian {
                     } else {
                         currentTask.markAsNotDone();
                     }
+                } else if (command.equals("delete")) {
+                    if (userInput.split(" ").length == 1) {
+                        throw new LucianException("You have to give me the index to delete...");
+                    }
+                    int index = Integer.parseInt(userInput.split(" ")[1]);
+                    Task removedTask = listOfTasks.get(index - 1);
+                    System.out.println("Sure, I'll remove the following task:");
+                    System.out.println(removedTask);
+                    listOfTasks.remove(index - 1);
+                    System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
                 } else if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
                     if (userInput.split(" ").length == 1) {
                         throw new LucianException("The description of a " + command + " cannot be empty man...");
