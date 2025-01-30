@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 public abstract class Task {
 
     protected String description;
@@ -15,11 +17,11 @@ public abstract class Task {
         if (type.equals("T")) {
             task = new ToDo(description);
         } else if (type.equals("D")) {
-            String by = parts[3];
+            LocalDate by = LocalDate.parse(parts[3]);
             task = new Deadline(description, by);
         } else {
-            String from = parts[3];
-            String to = parts[4];
+            LocalDate from = LocalDate.parse(parts[3]);
+            LocalDate to = LocalDate.parse(parts[4]);
             task = new Event(description, from, to);
         }
 
@@ -47,13 +49,9 @@ public abstract class Task {
 
     public void markAsDone() {
         this.isDone = true;
-        System.out.println("Alright, I've marked this task as done:");
-        System.out.println(this.toString());
     }
 
     public void markAsNotDone() {
         this.isDone = false;
-        System.out.println("Alright, I've marked this task as not done yet:");
-        System.out.println(this.toString());
     }
 }

@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FileReader;
@@ -42,11 +44,18 @@ public class Lucian {
                         throw new LucianException("You have to give me the index to mark/unmark...");
                     }
                     int index = Integer.parseInt(userInput.split(" ")[1]);
+                    if (index <= 0 || index > listOfTasks.size()) {
+                        throw new LucianException("This index isn't even part of the list...");
+                    }
                     Task currentTask = listOfTasks.get(index - 1);
                     if (userInput.startsWith("mark")) {
                         currentTask.markAsDone();
+                        System.out.println("Alright, I've marked this task as done:");
+                        System.out.println(currentTask.toString());
                     } else {
                         currentTask.markAsNotDone();
+                        System.out.println("Alright, I've marked this task as not done yet:");
+                        System.out.println(currentTask.toString());
                     }
                     break;
                 }
@@ -55,6 +64,9 @@ public class Lucian {
                         throw new LucianException("You have to give me the index to delete...");
                     }
                     int index = Integer.parseInt(userInput.split(" ")[1]);
+                    if (index <= 0 || index > listOfTasks.size()) {
+                        throw new LucianException("This index isn't even part of the list...");
+                    }
                     Task removedTask = listOfTasks.get(index - 1);
                     System.out.println("Sure, I'll remove the following task:");
                     System.out.println(removedTask);
@@ -85,7 +97,7 @@ public class Lucian {
         }
     }
 
-    private static Task createTask(String input) {
+    private static Task createTask(String input) throws LucianException {
         Task createdTask;
         String description;
         if (input.startsWith("todo ")) {
@@ -93,16 +105,36 @@ public class Lucian {
             createdTask = new ToDo(description);
         } else if (input.startsWith("deadline ")) {
             int byIndex = input.indexOf("/by");
-            String by = input.substring(byIndex + 4);
+            if (byIndex == -1) throw new LucianException("Your Deadline should have a /by date...");
+
             description = input.substring(9, byIndex - 1);
-            createdTask = new Deadline(description, by);
+            String byString = input.substring(byIndex + 4).trim();
+
+            try {
+                LocalDate by = LocalDate.parse(byString);
+                createdTask = new Deadline(description, by);
+            } catch (DateTimeParseException e) {
+                throw new LucianException("Use the YYYY-MM-DD date format or else I can't understand you...");
+            }
         } else {
             int fromIndex = input.indexOf("/from");
             int toIndex = input.indexOf("/to");
-            String from = input.substring(fromIndex + 6, toIndex - 1);
-            String to = input.substring(toIndex + 4);
+
+            if (fromIndex == -1 || toIndex == -1) {
+                throw new LucianException("Your Event must have /from and /to dates...");
+            }
+
             description = input.substring(6, fromIndex - 1);
-            createdTask = new Event(description, from, to);
+            String fromString = input.substring(fromIndex + 6, toIndex - 1).trim();
+            String toString = input.substring(toIndex + 4).trim();
+
+            try {
+                LocalDate from = LocalDate.parse(fromString);
+                LocalDate to = LocalDate.parse(toString);
+                createdTask = new Event(description, from, to);
+            } catch (DateTimeParseException e) {
+                throw new LucianException("Use the YYYY-MM-DD date format or else I can't understand you...");
+            }
         }
         return createdTask;
     }
@@ -131,12 +163,14 @@ public class Lucian {
             }
 
             FileReader fileReader = new FileReader(FILE_NAME);
-            Scanner scanner = new Scanner(fileReader); // Scanner to read line by line
+            Scanner scanner = new Scanner(fileReader);
 
             while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                Task task = Task.fromFileFormat(line);
-                listOfTasks.add(task);
+                String line = scanner.nextLine().trim();
+                if (!line.isEmpty()) {
+                    Task task = Task.fromFileFormat(line);
+                    listOfTasks.add(task);
+                }
             }
 
             scanner.close();
