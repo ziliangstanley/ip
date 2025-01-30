@@ -1,41 +1,43 @@
-import java.util.Arrays;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Lucian {
+    private static final String FILE_NAME = "./data/tasks.txt";
+    static ArrayList<Task> listOfTasks = new ArrayList<Task>();
+
     public static void main(String[] args) {
-        String logo = " ____        _        \n"
-                + "|  _ \\ _   _| | _____ \n"
-                + "| | | | | | | |/ / _ \\\n"
-                + "| |_| | |_| |   <  __/\n"
-                + "|____/ \\__,_|_|\\_\\___|\n";
+        loadTasksFromFile();
 
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> listOfTasks = new ArrayList<Task>();
-
         System.out.println("____________________________________________________________");
         System.out.println("Hey! I'm Lucian\n" + "How can I help?");
         System.out.println("____________________________________________________________");
 
-
+        label:
         while (scanner.hasNext()) {
             System.out.println("____________________________________________________________");
             try {
                 String userInput = scanner.nextLine();
                 String command = userInput.split(" ")[0];
-                //String description = userInput.substring(command.length() + 1);
-                //System.out.println(description);
 
-                if (command.equals("bye")) {
+                switch (command) {
+                case "bye":
+                    saveTasksToFile();
                     System.out.println("Bye. See you around.");
                     System.out.println("____________________________________________________________");
-                    break;
-                } else if (command.equals("list")) {
+                    break label;
+                case "list":
                     for (int i = 0; i < listOfTasks.size(); i++) {
                         Task currentTask = listOfTasks.get(i);
                         System.out.println(i + 1 + "." + currentTask.toString());
                     }
-                } else if (command.equals("mark") || command.equals("unmark")) {
+                    break;
+                case "mark":
+                case "unmark": {
                     if (userInput.split(" ").length == 1) {
                         throw new LucianException("You have to give me the index to mark/unmark...");
                     }
@@ -46,7 +48,9 @@ public class Lucian {
                     } else {
                         currentTask.markAsNotDone();
                     }
-                } else if (command.equals("delete")) {
+                    break;
+                }
+                case "delete": {
                     if (userInput.split(" ").length == 1) {
                         throw new LucianException("You have to give me the index to delete...");
                     }
@@ -56,7 +60,11 @@ public class Lucian {
                     System.out.println(removedTask);
                     listOfTasks.remove(index - 1);
                     System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
-                } else if (command.equals("todo") || command.equals("deadline") || command.equals("event")) {
+                    break;
+                }
+                case "todo":
+                case "deadline":
+                case "event":
                     if (userInput.split(" ").length == 1) {
                         throw new LucianException("The description of a " + command + " cannot be empty man...");
                     }
@@ -65,11 +73,12 @@ public class Lucian {
                     System.out.println(newTask);
                     listOfTasks.add(newTask);
                     System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
-                } else {
+                    break;
+                default:
                     throw new LucianException("You did not give me a valid command...");
                 }
 
-            } catch (LucianException e) {
+            } catch (LucianException | IOException e) {
                 System.out.println(e.getMessage());
             }
             System.out.println("____________________________________________________________");
@@ -97,4 +106,45 @@ public class Lucian {
         }
         return createdTask;
     }
+
+    private static void saveTasksToFile() throws IOException {
+        FileWriter writer = new FileWriter(FILE_NAME); // Overwrites the file
+
+        for (Task task : listOfTasks) {
+            writer.write(task.toFileFormat() + "\n");
+        }
+
+        writer.close(); // Important to close the writer
+    }
+
+
+    private static void loadTasksFromFile() {
+        try {
+            File directory = new File("./data/");
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            File file = new File(FILE_NAME);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileReader fileReader = new FileReader(FILE_NAME);
+            Scanner scanner = new Scanner(fileReader); // Scanner to read line by line
+
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                Task task = Task.fromFileFormat(line);
+                listOfTasks.add(task);
+            }
+
+            scanner.close();
+            fileReader.close();
+
+        } catch (IOException e) {
+            System.out.println("Error reading saved tasks.");
+        }
+    }
+
 }
