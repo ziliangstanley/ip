@@ -68,6 +68,10 @@ public class Lucian {
                 storage.save(tasks);
                 ui.showGoodbye();
                 return true;
+            case "find":
+                String keyword = userInput.substring(6);
+                tasks.findTasks(keyword);
+                break;
             case "list":
                 tasks.printTasks();
                 break;
