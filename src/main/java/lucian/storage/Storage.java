@@ -10,13 +10,27 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
+/**
+ * Handles loading and saving tasks from/to a file.
+ */
 public class Storage {
     private String filePath;
 
+    /**
+     * Constructs a Storage instance with a specified file path.
+     *
+     * @param filePath The path to the storage file.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Loads tasks from the storage file.
+     *
+     * @return A list of tasks.
+     * @throws IOException If an error occurs while reading the file.
+     */
     public ArrayList<Task> load() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
         File file = new File(filePath);
@@ -37,6 +51,12 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Saves tasks to the storage file.
+     *
+     * @param taskList The list of tasks to save.
+     * @throws IOException If an error occurs while writing to the file.
+     */
     public void save(TaskList taskList) throws IOException {
         FileWriter writer = new FileWriter(filePath);
         for (int i = 0; i < taskList.getSize(); i++) {

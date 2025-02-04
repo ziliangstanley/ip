@@ -11,12 +11,21 @@ import lucian.exceptions.LucianException;
 
 import java.io.IOException;
 
+/**
+ * Represents the main entry point for the Lucian chatbot.
+ * It initializes components and handles user interactions.
+ */
 public class Lucian {
     private static final String FILE_NAME = "./data/tasks.txt";
     private Ui ui;
     private Storage storage;
     private TaskList tasks;
 
+    /**
+     * Initializes the Lucian chatbot with a storage file.
+     *
+     * @param filePath Path to the file where tasks are stored.
+     */
     public Lucian(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
@@ -27,6 +36,9 @@ public class Lucian {
         }
     }
 
+    /**
+     * Starts the chatbot's main event loop.
+     */
     public void run() {
         ui.showWelcome();
 
@@ -40,6 +52,12 @@ public class Lucian {
         }
     }
 
+    /**
+     * Processes a user command.
+     *
+     * @param userInput The input command entered by the user.
+     * @return {@code true} if the program should exit, {@code false} otherwise.
+     */
     private boolean handleCommand(String userInput) {
         try {
             String[] words = userInput.split(" ", 2);
@@ -86,6 +104,13 @@ public class Lucian {
         return false;
     }
 
+    /**
+     * Creates a task based on the user input.
+     *
+     * @param input The user's input containing the task type and details.
+     * @return The created {@code Task} object.
+     * @throws LucianException If the task format is invalid.
+     */
     private Task createTask(String input) throws LucianException {
         Task createdTask;
         String description;
@@ -123,6 +148,11 @@ public class Lucian {
         return createdTask;
     }
 
+    /**
+     * The main entry point for the application.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         new Lucian(FILE_NAME).run();
     }
