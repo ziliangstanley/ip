@@ -1,5 +1,3 @@
-package lucian.ui;
-
 import java.util.Scanner;
 
 public class Ui {
@@ -11,7 +9,8 @@ public class Ui {
 
     public void showWelcome() {
         System.out.println("____________________________________________________________");
-        System.out.println("Hey! I'm lucian.Lucian\nHow can I help?");
+        System.out.println("Hey! I'm Lucian\nHow can I help?");
+        System.out.println("____________________________________________________________");
     }
 
     public void showGoodbye() {

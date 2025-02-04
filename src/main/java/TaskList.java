@@ -1,5 +1,3 @@
-package lucian.task;
-
 import java.util.ArrayList;
 
 public class TaskList {
@@ -30,13 +28,8 @@ public class TaskList {
     }
 
     public void printTasks() {
-        if (listOfTasks.size() == 0) {
-            System.out.println("There is nothing in the list now.");
-        } else {
-            System.out.println("The following items are in the list now.");
-            for (int i = 0; i < listOfTasks.size(); i++) {
-                System.out.println(i + 1 + "." + listOfTasks.get(i).toString());
-            }
+        for (int i = 0; i < listOfTasks.size(); i++) {
+            System.out.println(i + 1 + "." + listOfTasks.get(i).toString());
         }
     }
 }
