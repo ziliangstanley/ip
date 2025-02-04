@@ -30,7 +30,7 @@ public class TaskList {
     }
 
     public void printTasks() {
-        if (listOfTasks.size() == 0) {
+        if (listOfTasks.isEmpty()) {
             System.out.println("There is nothing in the list now.");
         } else {
             System.out.println("The following items are in the list now.");
