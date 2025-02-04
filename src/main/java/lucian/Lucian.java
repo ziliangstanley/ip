@@ -97,6 +97,7 @@ public class Lucian {
                 break;
             default:
                 ui.showMessage("You did not give me a valid command...");
+                break;
             }
         } catch (Exception e) {
             ui.showMessage("Error: " + e.getMessage());
