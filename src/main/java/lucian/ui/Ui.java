@@ -18,23 +18,22 @@ public class Ui {
     /**
      * Displays the welcome message.
      */
-    public void showWelcome() {
-        System.out.println("____________________________________________________________");
-        System.out.println("Hey! I'm lucian.Lucian\nHow can I help?");
+    public String showWelcome() {
+        return "Hey! I'm Lucian!\nHow can I help?";
     }
 
     /**
      * Displays the goodbye message.
      */
-    public void showGoodbye() {
-        System.out.println("Bye. See you around.");
+    public String showGoodbye() {
+        return "Bye. See you around.";
     }
 
     /**
      * Prints a separator line.
      */
-    public void showLine() {
-        System.out.println("____________________________________________________________");
+    public String showLine() {
+        return "____________________________________________________________";
     }
 
     /**
@@ -51,7 +50,7 @@ public class Ui {
      *
      * @param message The message to be displayed.
      */
-    public void showMessage(String message) {
-        System.out.println(message);
+    public String showMessage(String message) {
+        return message;
     }
 }

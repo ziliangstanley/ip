@@ -66,18 +66,19 @@ public class TaskList {
      * Prints all tasks in the list.
      * If the list is empty, a message is returned.
      */
-    public void printTasks() {
+    public String printTasks() {
         if (listOfTasks.isEmpty()) {
-            System.out.println("There is nothing in the list now.");
+            return "There is nothing in the list now.";
         } else {
-            System.out.println("The following items are in the list now.");
+            StringBuilder output = new StringBuilder("The following items are in the list now.\n");
             for (int i = 0; i < listOfTasks.size(); i++) {
-                System.out.println(i + 1 + "." + listOfTasks.get(i).toString());
+                output.append(i + 1).append(". ").append(listOfTasks.get(i).toString() + "\n");
             }
+            return output.toString();
         }
     }
 
-    public void findTasks(String keyword) {
+    public String findTasks(String keyword) {
         ArrayList<Task> matchingTasks = new ArrayList<>();
         for (int i = 0; i < listOfTasks.size(); i++) {
             Task currentTask = listOfTasks.get(i);
@@ -86,11 +87,13 @@ public class TaskList {
             }
         }
         if (matchingTasks.isEmpty()) {
-            System.out.println("There are no tasks in your list that has this keyword.");
+            return "There are no tasks in your list that has this keyword.";
         } else {
+            StringBuilder output = new StringBuilder("The following items match the keyword.\n");
             for (int j = 0; j < matchingTasks.size(); j++) {
-                System.out.println(j + 1 + "." + matchingTasks.get(j).toString());
+                output.append(j + 1).append(". ").append(matchingTasks.get(j).toString() + "\n");
             }
+            return output.toString();
         }
     }
 }
