@@ -1,6 +1,6 @@
 package lucian.exceptions;
 
-public class LucianException extends Exception{
+public class LucianException extends Exception {
     public LucianException(String string) {
         super(string);
     }
