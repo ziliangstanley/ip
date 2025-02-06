@@ -23,12 +23,10 @@ public class Lucian {
 
     /**
      * Initializes the Lucian chatbot with a storage file.
-     *
-     * @param filePath Path to the file where tasks are stored.
      */
-    public Lucian(String filePath) {
+    public Lucian() {
         ui = new Ui();
-        storage = new Storage(filePath);
+        storage = new Storage(FILE_NAME);
         try {
             tasks = new TaskList(storage.load());
         } catch (IOException e) {
@@ -36,21 +34,22 @@ public class Lucian {
         }
     }
 
-    /**
-     * Starts the chatbot's main event loop.
-     */
-    public void run() {
-        ui.showWelcome();
-
-        boolean isExit = false;
-        while (!isExit) {
-            ui.showLine();
-            String userInput = ui.readCommand();
-            ui.showLine();
-
-            isExit = handleCommand(userInput);
-        }
+    public String getGreeting() {
+        return ui.showWelcome();
     }
+
+//    /**
+//     * Starts the chatbot's main event loop.
+//     */
+//    public void run() {
+//        ui.showWelcome();
+//
+//        String output = "";
+//        while (output != ui.showGoodbye()) {
+//            String userInput = ui.readCommand();
+//            output = handleCommand(userInput);
+//        }
+//    }
 
     /**
      * Processes a user command.
@@ -58,7 +57,7 @@ public class Lucian {
      * @param userInput The input command entered by the user.
      * @return {@code true} if the program should exit, {@code false} otherwise.
      */
-    private boolean handleCommand(String userInput) {
+    public String handleCommand(String userInput) {
         try {
             String[] words = userInput.split(" ", 2);
             String command = words[0];
@@ -66,47 +65,38 @@ public class Lucian {
             switch (command) {
             case "bye":
                 storage.save(tasks);
-                ui.showGoodbye();
-                return true;
+                return ui.showGoodbye();
             case "find":
                 String keyword = userInput.substring(6);
-                tasks.findTasks(keyword);
-                break;
+                return ui.showMessage(tasks.findTasks(keyword));
             case "list":
-                tasks.printTasks();
-                break;
+                return ui.showMessage(tasks.printTasks());
             case "mark":
                 int markIndex = Integer.parseInt(words[1]) - 1;
                 tasks.getTask(markIndex).markAsDone();
-                ui.showMessage("Alright, I've marked this task as done:\n" + tasks.getTask(markIndex));
-                break;
+                return ui.showMessage("Alright, I've marked this task as done:\n" + tasks.getTask(markIndex));
             case "unmark":
                 int unmarkIndex = Integer.parseInt(words[1]) - 1;
                 tasks.getTask(unmarkIndex).markAsNotDone();
-                ui.showMessage("Alright, I've marked this task as not done yet:\n" + tasks.getTask(unmarkIndex));
-                break;
+                return ui.showMessage("Alright, I've marked this task as not done yet:\n" + tasks.getTask(unmarkIndex));
             case "delete":
                 int deleteIndex = Integer.parseInt(words[1]) - 1;
                 Task removedTask = tasks.removeTask(deleteIndex);
-                ui.showMessage("Sure, I'll remove this task:\n" + removedTask);
-                ui.showMessage("Now you have " + tasks.getSize() + " tasks in the list.");
-                break;
+                return ui.showMessage("Sure, I'll remove this task:\n" + removedTask + "\nNow you have "
+                        + tasks.getSize() + " tasks in the list.");
             case "todo":
             case "deadline":
             case "event":
                 Task newTask = createTask(userInput);
                 tasks.addTask(newTask);
-                ui.showMessage("Roger. I'll be adding this task to the list:\n" + newTask);
-                ui.showMessage("Now you have " + tasks.getSize() + " tasks in the list.");
-                break;
+                return ui.showMessage("Roger. I'll be adding this task to the list:\n" + newTask + "\nNow you have "
+                        + tasks.getSize() + " tasks in the list.");
             default:
-                ui.showMessage("You did not give me a valid command...");
-                break;
+                return ui.showMessage("You did not give me a valid command...");
             }
         } catch (Exception e) {
-            ui.showMessage("Error: " + e.getMessage());
+            return ui.showMessage("Error: " + e.getMessage());
         }
-        return false;
     }
 
     /**
@@ -155,12 +145,12 @@ public class Lucian {
         return createdTask;
     }
 
-    /**
-     * The main entry point for the application.
-     *
-     * @param args Command-line arguments (not used).
-     */
-    public static void main(String[] args) {
-        new Lucian(FILE_NAME).run();
-    }
+//    /**
+//     * The main entry point for the application.
+//     *
+//     * @param args Command-line arguments (not used).
+//     */
+//    public static void main(String[] args) {
+//        new Lucian().run();
+//    }
 }
