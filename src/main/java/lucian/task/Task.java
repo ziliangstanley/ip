@@ -7,6 +7,11 @@ public abstract class Task {
     protected String description;
     protected boolean isDone;
 
+    public Task(String description) {
+        this.description = description;
+        this.isDone = false;
+    }
+
     public abstract String toFileFormat();
 
     public static Task fromFileFormat(String line) {
@@ -27,18 +32,15 @@ public abstract class Task {
             task = new Event(description, from, to);
         }
 
-        if (isDone) task.markAsDone();
+        if (isDone) {
+            task.markAsDone();
+        }
         return task;
     }
 
     @Override
     public String toString() {
         return "[" + this.getStatusIcon() + "] " + this.getDescription();
-    }
-
-    public Task(String description) {
-        this.description = description;
-        this.isDone = false;
     }
 
     public String getStatusIcon() {

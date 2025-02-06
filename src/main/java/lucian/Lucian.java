@@ -1,15 +1,15 @@
 package lucian;
 
-import lucian.ui.Ui;
+import java.io.IOException;
+
+import lucian.exceptions.LucianException;
 import lucian.storage.Storage;
-import lucian.task.TaskList;
-import lucian.task.Task;
-import lucian.task.ToDo;
 import lucian.task.Deadline;
 import lucian.task.Event;
-import lucian.exceptions.LucianException;
-
-import java.io.IOException;
+import lucian.task.Task;
+import lucian.task.TaskList;
+import lucian.task.ToDo;
+import lucian.ui.Ui;
 
 /**
  * Represents the main entry point for the Lucian chatbot.
@@ -124,8 +124,9 @@ public class Lucian {
             createdTask = new ToDo(description);
         } else if (input.startsWith("deadline ")) {
             int byIndex = input.indexOf("/by");
-            if (byIndex == -1) throw new LucianException("Your Deadline should have a /by date...");
-
+            if (byIndex == -1) {
+                throw new LucianException("Your Deadline should have a /by date...");
+            }
             description = input.substring(9, byIndex - 1);
             String byString = input.substring(byIndex + 4).trim();
 
@@ -145,7 +146,8 @@ public class Lucian {
             String toString = input.substring(toIndex + 4).trim();
 
             try {
-                createdTask = new Event(description, java.time.LocalDate.parse(fromString), java.time.LocalDate.parse(toString));
+                createdTask = new Event(description, java.time.LocalDate.parse(fromString),
+                        java.time.LocalDate.parse(toString));
             } catch (java.time.format.DateTimeParseException e) {
                 throw new LucianException("Use YYYY-MM-DD format...");
             }
