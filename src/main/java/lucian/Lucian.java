@@ -59,6 +59,8 @@ public class Lucian {
                 return findKeywordTasks(words);
             case "list":
                 return listTask();
+            case "stats":
+                return getStatistics();
             case "mark":
                 return markTask(words);
             case "unmark":
@@ -163,5 +165,10 @@ public class Lucian {
         return ui.showMessage("Sure, I'll remove this task:\n" + removedTask + "\nNow you have "
                 + tasks.getSize() + " tasks in the list.");
     }
+
+    private String getStatistics() {
+        return ui.showMessage(tasks.getStatistics());
+    }
+
 
 }

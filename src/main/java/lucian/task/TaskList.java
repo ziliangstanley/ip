@@ -1,6 +1,8 @@
 package lucian.task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Manages a list of tasks.
@@ -95,5 +97,40 @@ public class TaskList {
             }
             return output.toString();
         }
+    }
+
+
+    /**
+     * Computes statistics about the tasks.
+     *
+     * @return A formatted string containing task statistics.
+     */
+    public String getStatistics() {
+        int totalTasks = listOfTasks.size();
+        int completedTasks = 0;
+        Map<String, Integer> taskTypeCounts = new HashMap<>();
+        taskTypeCounts.put("ToDo", 0);
+        taskTypeCounts.put("Deadline", 0);
+        taskTypeCounts.put("Event", 0);
+
+        for (Task task : listOfTasks) {
+            if (task.isDone) {
+                completedTasks++;
+            }
+            String taskType = task.getClass().getSimpleName(); // Gets "ToDo", "Deadline", or "Event"
+            taskTypeCounts.put(taskType, taskTypeCounts.getOrDefault(taskType, 0) + 1);
+        }
+
+        String mostCommonType = taskTypeCounts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .get()
+                .getKey();
+
+        double completionRate = totalTasks > 0 ? (completedTasks * 100.0) / totalTasks : 0.0;
+
+        return String.format(
+                "Task Statistics:\n- Total tasks: %d\n- Completed tasks: %d (%.1f%%)\n- Most common task type: %s",
+                totalTasks, completedTasks, completionRate, mostCommonType
+        );
     }
 }
