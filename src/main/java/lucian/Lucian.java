@@ -88,6 +88,7 @@ public class Lucian {
         Task createdTask;
         String description;
         if (input.startsWith(TODO)) {
+            assert input.length() > 5 : "Todo description cannot be empty.";
             description = input.substring(5);
             createdTask = new ToDo(description);
         } else if (input.startsWith(DEADLINE)) {
@@ -98,6 +99,7 @@ public class Lucian {
             description = input.substring(9, byIndex - 1);
             String byString = input.substring(byIndex + 4).trim();
 
+            assert !byString.isEmpty() : "Deadline date cannot be empty.";
             try {
                 createdTask = new Deadline(description, java.time.LocalDate.parse(byString));
             } catch (java.time.format.DateTimeParseException e) {
@@ -142,9 +144,11 @@ public class Lucian {
     }
 
     private String markTask(String[] words) {
-        int index = Integer.parseInt(words[1]) - 1;
-        tasks.getTask(index).markAsDone();
-        return ui.showMessage("Task marked as done:\n" + tasks.getTask(index));
+            assert words.length > 1 : "Missing index for mark command.";
+            int markIndex = Integer.parseInt(words[1]) - 1;
+            assert markIndex >= 0 && markIndex < tasks.getSize() : "Invalid task index for mark command.";
+            tasks.getTask(markIndex).markAsDone();
+            return ui.showMessage("Alright, I've marked this task as done:\n" + tasks.getTask(markIndex));
     }
 
     private String unmarkTask(String[] words) {
