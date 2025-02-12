@@ -30,22 +30,6 @@ public class Ui {
     }
 
     /**
-     * Prints a separator line.
-     */
-    public String showLine() {
-        return "____________________________________________________________";
-    }
-
-    /**
-     * Reads a command entered by the user.
-     *
-     * @return The user's input as a string.
-     */
-    public String readCommand() {
-        return scanner.nextLine();
-    }
-
-    /**
      * Displays a message to the user.
      *
      * @param message The message to be displayed.
