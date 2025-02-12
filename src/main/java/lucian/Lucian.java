@@ -20,6 +20,9 @@ public class Lucian {
     private Ui ui;
     private Storage storage;
     private TaskList tasks;
+    private static final String TODO = "todo";
+    private static final String DEADLINE = "deadline";
+    private static final String EVENT = "event";
 
     /**
      * Initializes the Lucian chatbot with a storage file.
@@ -38,19 +41,6 @@ public class Lucian {
         return ui.showWelcome();
     }
 
-//    /**
-//     * Starts the chatbot's main event loop.
-//     */
-//    public void run() {
-//        ui.showWelcome();
-//
-//        String output = "";
-//        while (output != ui.showGoodbye()) {
-//            String userInput = ui.readCommand();
-//            output = handleCommand(userInput);
-//        }
-//    }
-
     /**
      * Processes a user command.
      *
@@ -64,35 +54,21 @@ public class Lucian {
 
             switch (command) {
             case "bye":
-                storage.save(tasks);
-                return ui.showGoodbye();
+                return byeProgram();
             case "find":
-                String keyword = userInput.substring(6);
-                return ui.showMessage(tasks.findTasks(keyword));
+                return findKeywordTasks(words);
             case "list":
-                return ui.showMessage(tasks.printTasks());
+                return listTask();
             case "mark":
-                assert words.length > 1 : "Missing index for mark command.";
-                int markIndex = Integer.parseInt(words[1]) - 1;
-                assert markIndex >= 0 && markIndex < tasks.getSize() : "Invalid task index for mark command.";
-                tasks.getTask(markIndex).markAsDone();
-                return ui.showMessage("Alright, I've marked this task as done:\n" + tasks.getTask(markIndex));
+                return markTask(words);
             case "unmark":
-                int unmarkIndex = Integer.parseInt(words[1]) - 1;
-                tasks.getTask(unmarkIndex).markAsNotDone();
-                return ui.showMessage("Alright, I've marked this task as not done yet:\n" + tasks.getTask(unmarkIndex));
+                return unmarkTask(words);
             case "delete":
-                int deleteIndex = Integer.parseInt(words[1]) - 1;
-                Task removedTask = tasks.removeTask(deleteIndex);
-                return ui.showMessage("Sure, I'll remove this task:\n" + removedTask + "\nNow you have "
-                        + tasks.getSize() + " tasks in the list.");
-            case "todo":
-            case "deadline":
-            case "event":
-                Task newTask = createTask(userInput);
-                tasks.addTask(newTask);
-                return ui.showMessage("Roger. I'll be adding this task to the list:\n" + newTask + "\nNow you have "
-                        + tasks.getSize() + " tasks in the list.");
+                return deleteTask(words);
+            case TODO:
+            case DEADLINE:
+            case EVENT:
+                return createTask(userInput);
             default:
                 return ui.showMessage("You did not give me a valid command...");
             }
@@ -108,14 +84,14 @@ public class Lucian {
      * @return The created {@code Task} object.
      * @throws LucianException If the task format is invalid.
      */
-    private Task createTask(String input) throws LucianException {
+    private String createTask(String input) throws LucianException {
         Task createdTask;
         String description;
-        if (input.startsWith("todo ")) {
+        if (input.startsWith(TODO)) {
             assert input.length() > 5 : "Todo description cannot be empty.";
             description = input.substring(5);
             createdTask = new ToDo(description);
-        } else if (input.startsWith("deadline ")) {
+        } else if (input.startsWith(DEADLINE)) {
             int byIndex = input.indexOf("/by");
             if (byIndex == -1) {
                 throw new LucianException("Your Deadline should have a /by date...");
@@ -129,7 +105,7 @@ public class Lucian {
             } catch (java.time.format.DateTimeParseException e) {
                 throw new LucianException("Use YYYY-MM-DD format...");
             }
-        } else {
+        } else if (input.startsWith(EVENT)) {
             int fromIndex = input.indexOf("/from");
             int toIndex = input.indexOf("/to");
             if (fromIndex == -1 || toIndex == -1) {
@@ -145,16 +121,47 @@ public class Lucian {
             } catch (java.time.format.DateTimeParseException e) {
                 throw new LucianException("Use YYYY-MM-DD format...");
             }
+        } else {
+            throw new LucianException("What task are you trying to create here?");
         }
-        return createdTask;
+        tasks.addTask(createdTask);
+        return ui.showMessage("Roger. I'll be adding this task to the list:\n" + createdTask + "\nNow you have "
+                + tasks.getSize() + " tasks in the list.");
     }
 
-//    /**
-//     * The main entry point for the application.
-//     *
-//     * @param args Command-line arguments (not used).
-//     */
-//    public static void main(String[] args) {
-//        new Lucian().run();
-//    }
+    private String byeProgram() throws IOException {
+        storage.save(tasks);
+        return ui.showGoodbye();
+    }
+
+    private String findKeywordTasks(String[] words) {
+        String keyword = words[1];
+        return ui.showMessage(tasks.findTasks(keyword));
+    }
+
+    private String listTask() {
+        return ui.showMessage(tasks.printTasks());
+    }
+
+    private String markTask(String[] words) {
+            assert words.length > 1 : "Missing index for mark command.";
+            int markIndex = Integer.parseInt(words[1]) - 1;
+            assert markIndex >= 0 && markIndex < tasks.getSize() : "Invalid task index for mark command.";
+            tasks.getTask(markIndex).markAsDone();
+            return ui.showMessage("Alright, I've marked this task as done:\n" + tasks.getTask(markIndex));
+    }
+
+    private String unmarkTask(String[] words) {
+        int index = Integer.parseInt(words[1]) - 1;
+        tasks.getTask(index).markAsNotDone();
+        return ui.showMessage("Task marked as not done yet:\n" + tasks.getTask(index));
+    }
+
+    private String deleteTask (String[] words) {
+        int deleteIndex = Integer.parseInt(words[1]) - 1;
+        Task removedTask = tasks.removeTask(deleteIndex);
+        return ui.showMessage("Sure, I'll remove this task:\n" + removedTask + "\nNow you have "
+                + tasks.getSize() + " tasks in the list.");
+    }
+
 }
