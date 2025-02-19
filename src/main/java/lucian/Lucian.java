@@ -49,7 +49,7 @@ public class Lucian {
      */
     public String handleCommand(String userInput) {
         try {
-            String[] words = userInput.split(" ", 2);
+            String[] words = userInput.split(" ");
             String command = words[0];
 
             switch (command) {
@@ -92,11 +92,17 @@ public class Lucian {
         if (input.startsWith(TODO)) {
             assert input.length() > 5 : "Todo description cannot be empty.";
             description = input.substring(5);
+            if (description.isBlank()) {
+                throw new LucianException("Your Todo description cannot be empty...");
+            }
             createdTask = new ToDo(description);
         } else if (input.startsWith(DEADLINE)) {
             int byIndex = input.indexOf("/by");
             if (byIndex == -1) {
                 throw new LucianException("Your Deadline should have a /by date...");
+            }
+            if (9 >= (byIndex - 1) || input.substring(9, byIndex - 1).isBlank()) {
+                throw new LucianException("Your Deadline description cannot be empty...");
             }
             description = input.substring(9, byIndex - 1);
             String byString = input.substring(byIndex + 4).trim();
@@ -112,6 +118,9 @@ public class Lucian {
             int toIndex = input.indexOf("/to");
             if (fromIndex == -1 || toIndex == -1) {
                 throw new LucianException("Your Event must have /from and /to dates...");
+            }
+            if (6 >= (fromIndex - 1) || input.substring(6, fromIndex - 1).isBlank()) {
+                throw new LucianException("Your Event description cannot be empty...");
             }
             description = input.substring(6, fromIndex - 1);
             String fromString = input.substring(fromIndex + 6, toIndex - 1).trim();
@@ -136,7 +145,10 @@ public class Lucian {
         return ui.showGoodbye();
     }
 
-    private String findKeywordTasks(String[] words) {
+    private String findKeywordTasks(String[] words) throws LucianException {
+        if (words.length < 1) {
+            throw new LucianException("You didn't specify the keyword...");
+        }
         String keyword = words[1];
         return ui.showMessage(tasks.findTasks(keyword));
     }
@@ -145,22 +157,40 @@ public class Lucian {
         return ui.showMessage(tasks.printTasks());
     }
 
-    private String markTask(String[] words) {
-            assert words.length > 1 : "Missing index for mark command.";
-            int markIndex = Integer.parseInt(words[1]) - 1;
-            assert markIndex >= 0 && markIndex < tasks.getSize() : "Invalid task index for mark command.";
-            tasks.getTask(markIndex).markAsDone();
-            return ui.showMessage("Alright, I've marked this task as done:\n" + tasks.getTask(markIndex));
+    private String markTask(String[] words) throws LucianException {
+        assert words.length > 1 : "Missing index for mark command.";
+        if (words.length == 1) {
+            throw new LucianException("You didn't specify the index to mark...");
+        }
+        int markIndex = Integer.parseInt(words[1]) - 1;
+        assert markIndex >= 0 && markIndex < tasks.getSize() : "Invalid task index for mark command.";
+        if (markIndex < 0 || markIndex > tasks.getSize()) {
+            throw new LucianException("This index isn't in the list...");
+        }
+        tasks.getTask(markIndex).markAsDone();
+        return ui.showMessage("Alright, I've marked this task as done:\n" + tasks.getTask(markIndex));
     }
 
-    private String unmarkTask(String[] words) {
-        int index = Integer.parseInt(words[1]) - 1;
-        tasks.getTask(index).markAsNotDone();
-        return ui.showMessage("Task marked as not done yet:\n" + tasks.getTask(index));
+    private String unmarkTask(String[] words) throws LucianException {
+        if (words.length == 1) {
+            throw new LucianException("You didn't specify the index to unmark...");
+        }
+        int unmarkIndex = Integer.parseInt(words[1]) - 1;
+        if (unmarkIndex < 0 || unmarkIndex > tasks.getSize()) {
+            throw new LucianException("This index isn't in the list...");
+        }
+        tasks.getTask(unmarkIndex).markAsNotDone();
+        return ui.showMessage("Task marked as not done yet:\n" + tasks.getTask(unmarkIndex));
     }
 
-    private String deleteTask (String[] words) {
+    private String deleteTask (String[] words) throws LucianException {
+        if (words.length == 1) {
+            throw new LucianException("You didn't specify the index to delete...");
+        }
         int deleteIndex = Integer.parseInt(words[1]) - 1;
+        if (deleteIndex < 0 || deleteIndex > tasks.getSize()) {
+            throw new LucianException("This index isn't in the list...");
+        }
         Task removedTask = tasks.removeTask(deleteIndex);
         return ui.showMessage("Sure, I'll remove this task:\n" + removedTask + "\nNow you have "
                 + tasks.getSize() + " tasks in the list.");
