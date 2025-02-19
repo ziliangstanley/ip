@@ -52,7 +52,7 @@ application {
 }
 
 shadowJar {
-    archiveFileName = "lucian.jar"
+    archiveBaseName = "lucian.jar"
     archiveClassifier = null
 }
 
