@@ -3,6 +3,10 @@ package lucian.task;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Type of task
+ * Has a description, completion status and deadline
+ */
 public class Deadline extends Task {
 
     protected LocalDate by;
